@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study AI Hub - 통합 학습 플랫폼</title>
+    <style>
+        :root {
+            --primary: #1a237e;
+            --accent: #2962ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8f9fa;
+        }
+        body { font-family: 'Pretendard', sans-serif; margin: 0; background: var(--bg); color: #333; }
+        
+        /* 네비게이션 바 */
+        header { background: var(--primary); color: white; padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 800; font-size: 1.2rem; cursor: pointer; }
+        nav span { margin-left: 20px; font-size: 0.9rem; cursor: pointer; opacity: 0.8; transition: 0.2s; }
+        nav span:hover { opacity: 1; text-decoration: underline; }
+
+        .container { max-width: 1000px; margin: 60px auto; padding: 0 20px; }
+        .hidden { display: none !important; }
+
+        /* 공통 버튼 */
+        button { padding: 12px 25px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-outline { background: white; border: 1px solid #ddd; color: #555; }
+        .btn-full { width: 100%; margin-top: 10px; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-dark { background: var(--primary); color: white; }
+
+        /* [1. 메인] 히어로 섹션 */
+        .hero { animation: fadeIn 0.8s ease-in-out; }
+        .hero h1 { font-size: 3rem; line-height: 1.2; margin-bottom: 20px; }
+        .hero p { color: #666; font-size: 1.1rem; margin-bottom: 40px; }
+
+        /* [2, 3. 가입/로그인] 카드 스타일 */
+        .auth-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 400px; margin: 0 auto; text-align: center; }
+        input { width: 100%; padding: 13px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #fafafa; }
+
+        /* [4. AI 페이지] 채팅창 스타일 */
+        .ai-layout { background: white; border-radius: 20px; height: 65vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .chat-header { padding: 15px 25px; border-bottom: 1px solid #eee; background: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .chat-box { flex: 1; padding: 25px; overflow-y: auto; background: #fff; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 18px; border-radius: 15px; max-width: 75%; line-height: 1.5; font-size: 0.95rem; }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: #f0f2f5; color: #333; border-bottom-left-radius: 2px; white-space: pre-wrap; }
+        .chat-input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
+        .chat-input-area input { margin: 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="showPage('home')">Study AI Hub</div>
+    <nav id="nav-links">
+        <!-- JS에서 동적으로 생성 -->
+    </nav>
+</header>
+
+<div class="container">
+    
+    <!-- [메인 페이지] -->
+    <section id="page-home" class="page">
+        <div class="hero">
+            <p style="color:var(--accent); font-weight:bold;">중급 웹 개발 과정을 위한 통합 예제</p>
+            <h1>지식을 나누고,<br>AI에게 바로 물어보는 학습 플랫폼</h1>
+            <p>회원가입 후 더욱 스마트한 AI 상담 기능을 경험해보세요.</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-primary" onclick="goToAi()">AI 상담소 바로가기</button>
+                <button id="main-signup-btn" class="btn-outline" onclick="showPage('signup')">지금 회원가입</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- [회원가입 페이지] -->
+    <section id="page-signup" class="page hidden">
+        <div class="auth-card">
+            <h2>회원가입</h2>
+            <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">새 계정을 만들고 서비스를 이용하세요.</p>
+            <input type="text" id="join-id" placeholder="아이디(이메일)">
+            <input type="password" id="join-pw" placeholder="비밀번호">
+            <button class="btn-success btn-full" onclick="actionSignup()">가입 완료</button>
+            <p style="margin-top:20px; font-size:0.85rem; color:#888;">이미 계정이 있나요? <span style="color:var(--accent); cursor:pointer;" onclick="showPage('login')">로그인</span></p>
+        </div>
+    </section>
+
+    <!-- [로그인 페이지] -->
+    <section id="page-login" class="page hidden">
+        <div class="auth-card">
+            <h2>로그인</h2>
+            <input type="text" id="login-id" placeholder="아이디">
+            <input type="password" id="login-pw" placeholder="비밀번호">
+            <button class="btn-dark btn-full" onclick="actionLogin()">로그인</button>
+            <p style="margin-top:20px; font-size:0.85rem; color:#888;">처음이신가요? <span style="color:var(--success); cursor:pointer;" onclick="showPage('signup')">회원가입</span></p>
+        </div>
+    </section>
+
+    <!-- [AI 전용 페이지] -->
+    <section id="page-ai" class="page hidden">
+        <div class="ai-layout">
+            <div class="chat-header">
+                <h3 style="margin:0">🤖 Gemini AI 상담소</h3>
+                <span id="user-display" style="font-size:0.8rem; color:#666;"></span>
+            </div>
+            <div class="chat-box" id="chat-box">
+                <div class="msg ai">환영합니다! 어떤 내용을 도와드릴까요?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="ai-input" placeholder="질문을 입력해 보세요..." onkeypress="if(event.keyCode==13) actionSendChat()">
+                <button class="btn-primary" onclick="actionSendChat()">전송</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // ⚠️ 여기에 본인의 Gemini API 키를 입력하세요.
+    const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE';
+    
+    // 현재 접속 중인 사용자 정보를 담는 변수 (null이면 로그아웃 상태)
+    let currentUser = null;
+
+    // 1. 페이지 전환 엔진
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+        document.getElementById('page-' + pageId).classList.remove('hidden');
+        updateHeader();
+        window.scrollTo(0,0);
+    }
+
+    // 2. 로그인 상태에 따른 헤더 업데이트
+    function updateHeader() {
+        const nav = document.getElementById('nav-links');
+        const signupBtn = document.getElementById('main-signup-btn');
+        
+        if (currentUser) {
+            nav.innerHTML = `
+                <span onclick="showPage('home')">메인</span>
+                <span onclick="showPage('ai')">AI 상담</span>
+                <span onclick="actionLogout()" style="color:var(--danger)">로그아웃</span>
+            `;
+            if(signupBtn) signupBtn.classList.add('hidden');
+            document.getElementById('user-display').innerText = `${currentUser}님 상담 중`;
+        } else {
+            nav.innerHTML = `
+                <span onclick="showPage('home')">메인</span>
+                <span onclick="showPage('login')">로그인</span>
+                <span onclick="showPage('signup')">회원가입</span>
+            `;
+            if(signupBtn) signupBtn.classList.remove('hidden');
+        }
+    }
+
+    // 3. 회원가입 프로세스
+    function actionSignup() {
+        const id = document.getElementById('join-id').value.trim();
+        const pw = document.getElementById('join-pw').value.trim();
+        
+        if(!id || !pw) return alert("아이디와 비밀번호를 모두 입력해주세요.");
+        if(localStorage.getItem(id)) return alert("이미 가입된 아이디입니다.");
+        
+        localStorage.setItem(id, pw);
+        alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
+        showPage('login'); // [회원가입] -> [로그인]
+    }
+
+    // 4. 로그인 프로세스
+    function actionLogin() {
+        const id = document.getElementById('login-id').value.trim();
+        const pw = document.getElementById('login-pw').value.trim();
+        
+        if(localStorage.getItem(id) === pw) {
+            currentUser = id;
+            alert(`${id}님, 환영합니다!`);
+            showPage('home'); // [로그인] -> [메인]
+        } else {
+            alert("정보가 일치하지 않습니다.");
+        }
+    }
+
+    // 5. 로그아웃 프로세스
+    function actionLogout() {
+        if(confirm("로그아웃 하시겠습니까?")) {
+            currentUser = null;
+            alert("로그아웃 되었습니다.");
+            showPage('home'); // [로그아웃] -> [메인]
+        }
+    }
+
+    // AI 버튼 클릭 제어
+    function goToAi() {
+        if(!currentUser) {
+            alert("로그인 후 이용 가능한 기능입니다.");
+            showPage('login');
+        } else {
+            showPage('ai'); // [메인] -> [AI 페이지]
+        }
+    }
+
+    // 6. AI 채팅 연동 (Gemini)
+    async function actionSendChat() {
+        const input = document.getElementById('ai-input');
+        const text = input.value.trim();
+        if(!text) return;
+
+        appendMsg('user', text);
+        input.value = '';
+
+        if(GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
+            appendMsg('ai', "⚠️ API 키가 설정되지 않았습니다. 개발자에게 문의하세요.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://googleapis.com{GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+            });
+            const data = await response.json();
+            const aiText = data.candidates[0].content.parts[0].text;
+            appendMsg('ai', aiText);
+        } catch (e) {
+            appendMsg('ai', "연결 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+    }
+
+    function appendMsg(sender, text) {
+        const box = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = `msg ${sender}`;
+        div.innerText = text;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // 초기 상태 로드
+    updateHeader();
+</script>
+
+</body>
+</html>
